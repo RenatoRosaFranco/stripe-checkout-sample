@@ -1,0 +1,44 @@
+<section id="products">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+
+        <div class='row'>
+          <% @products.all.each do |product| %>
+          <div class='col-md-3'>
+            <div class="panel panel-default">
+              <div class='panel-body'>
+                <div class="product-detail">
+                  <div class="jumbotron"></div>
+                  <h4 class="title"><%= truncate(product.name, length: 20) %></h4>
+                  <h5>Units: <span class='badge'><%= product.quantity %></span></h5>
+                  <h5 class="price">Price: <%= number_to_currency(product.price) %></h5>
+
+                  <% if (product.quantity > 0) %>
+                    <%= link_to new_charge_path(product_id: product.id), 
+                      method: :get, class: 'btn btn-primary btn-lg top',
+                      style: 'width: 100%;' do %>
+                      <i class="fa-solid fa-bag-shopping"></i>
+                      Buy
+                    <% end %>
+                  <% else %>
+                    <p class='text-center' style='padding-top: 7px; padding-bottom: 7px;'>
+                      <i class="fa-solid fa-cart-arrow-down"></i>
+                      Sould out
+                    </p>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
+          <% end %>
+
+          <br />
+          <div class="col-md-12 text-center">
+            <%= paginate(@products) %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

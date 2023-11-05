@@ -1,0 +1,81 @@
+<div class='container' style='margin-top: 120px;'>
+  <div class='row'>
+    <div class='col-md-12'>
+      <div class='col-md-4 col-md-offset-4'>
+        <div class='panel panel-default'>
+          <div class="panel-heading">
+            <h4 class='bold text-center'>Order Details</h4>
+          </div>
+
+          <% if flash[:error] %>
+            <p class='alert alert-danger text-center'>
+              <%= flash[:error] %>
+            </p>
+          <% end %>
+
+          <div class='panel-body'>
+              <%= form_for :charge,  { url: charges_path, method: :post, html: { id: 'payment-form' }} do |f| %>
+                <article>
+                  <label class="amount" style='padding-top: 10px; padding-bottom: 10px;'>
+                    <span>Amount: <%= number_to_currency(@product.price) %></span>
+                  </label>
+                  
+                  <div id="card-errors" role='alert'></div>
+                  <div id='card-element'></div>
+
+                  <br />
+                  <%= f.submit 'Complete Purchase', value: 'Complete Purchase',
+                  style: 'width: 100%;', class: 'btn btn-primary' %>
+                </article>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>  
+  </div>
+</div>
+
+<script type="text/javascript">
+  var form = document.getElementById('payment-form');
+
+  var stripe   = Stripe('<%= ENV['STRIPE_PUBLISHABLE_KEY'] %>');
+  var elements = stripe.elements();
+
+  var style = {
+    base: {
+      fontSize: '16px',
+      color:    '32325d'
+    }
+  }
+
+  var card = elements.create('card', { style: style });
+  card.mount('#card-element');
+
+  var form = document.getElementById('payment-form');
+  form.addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    stripe.createToken(card).then(function (result) {
+      if (result.error) {
+        var errorElement = document.getElementById('card-errors');
+        errorElement.textContent = result.error.message;
+      } else {
+        var token = result.token.id;
+        var hiddenInput = document.createElement('input');
+        hiddenInput.setAttribute('type',  'hidden');
+        hiddenInput.setAttribute('name',  'stripeToken');
+        hiddenInput.setAttribute('value', token);
+
+        var productIdInput = document.createElement('input');
+        productIdInput.setAttribute('type',  'hidden');
+        productIdInput.setAttribute('name',  'product_id');
+        productIdInput.setAttribute('value', '<%= @product.id %>');
+
+        form.appendChild(hiddenInput);
+        form.appendChild(productIdInput);
+        form.submit();
+      }
+    });
+  });
+</script>

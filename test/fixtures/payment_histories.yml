@@ -1,0 +1,26 @@
+# == Schema Information
+#
+# Table name: payment_histories
+#
+#  id         :integer          not null, primary key
+#  price      :float
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  product_id :integer
+#  user_id    :integer
+#
+# Indexes
+#
+#  index_payment_histories_on_product_id  (product_id)
+#  index_payment_histories_on_user_id     (user_id)
+#
+
+one:
+  user: one
+  product: one
+  price: 1.5
+
+two:
+  user: two
+  product: two
+  price: 1.5
